@@ -33,6 +33,30 @@ public class JobService {
         this.notificationService = notificationService;
     }
 
+//    public Job createJob(JobRequest request) {
+//
+//        String email = SecurityContextHolder.getContext()
+//                .getAuthentication()
+//                .getName();
+//
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow();
+//
+//        // 🔥 BUSINESS RULE
+//        if (user.getRole() == Role.STUDENT) {
+//            throw new RuntimeException("Students cannot post jobs");
+//        }
+//
+//        Job job = new Job();
+//        job.setTitle(request.getTitle());
+//        job.setDescription(request.getDescription());
+//        job.setCompany(request.getCompany());
+//        job.setCreatedAt(LocalDateTime.now());
+//        job.setPostedBy(user);
+//
+//        return jobRepository.save(job);
+//    }
+
     public Job createJob(JobRequest request) {
 
         String email = SecurityContextHolder.getContext()
@@ -42,7 +66,7 @@ public class JobService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow();
 
-        // 🔥 BUSINESS RULE
+        // 🔥 BUSINESS RULE: Students cannot post jobs
         if (user.getRole() == Role.STUDENT) {
             throw new RuntimeException("Students cannot post jobs");
         }
@@ -54,7 +78,24 @@ public class JobService {
         job.setCreatedAt(LocalDateTime.now());
         job.setPostedBy(user);
 
-        return jobRepository.save(job);
+        Job savedJob = jobRepository.save(job);
+
+        // 🔥 NOTIFY ALL USERS ABOUT NEW JOB (EXCEPT CREATOR)
+        List<User> users = userRepository.findAll();
+
+        for (User u : users) {
+
+            if (!u.getId().equals(user.getId())) {
+
+                notificationService.createNotification(
+                        "New job posted: " + savedJob.getTitle(),
+                        "JOB",
+                        u
+                );
+            }
+        }
+
+        return savedJob;
     }
 
     public List<JobResponse> getAllJobs() {
@@ -113,4 +154,53 @@ public class JobService {
 
         return "Application submitted successfully";
     }
+
+
+    public Job updateJob(Long jobId, JobRequest request) {
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        // 🔥 Only ADMIN or ALUMNI who posted it can update
+        if (!job.getPostedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not allowed to update this job");
+        }
+
+        job.setTitle(request.getTitle());
+        job.setDescription(request.getDescription());
+        job.setCompany(request.getCompany());
+
+        return jobRepository.save(job);
+    }
+
+
+    public String deleteJob(Long jobId) {
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!job.getPostedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not allowed to delete this job");
+        }
+
+        jobRepository.delete(job);
+
+        return "Job deleted successfully";
+    }
+
+
 }

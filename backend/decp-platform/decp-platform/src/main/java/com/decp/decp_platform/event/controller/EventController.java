@@ -40,4 +40,16 @@ public class EventController {
                 eventService.respondToEvent(eventId, status)
         );
     }
+
+    @PutMapping("/{id}")
+    public Event updateEvent(@PathVariable Long id,
+                             @RequestBody EventRequest request) {
+
+        return eventService.updateEvent(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteEvent(@PathVariable Long id) {
+        return eventService.deleteEvent(id);
+    }
 }

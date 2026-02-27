@@ -7,16 +7,16 @@ public class RegisterRequest {
     private String name;
     private String email;
     private String password;
-    private Role role;
+//    private Role role;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String name, String email, String password, Role role) {
+    public RegisterRequest(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+
     }
 
     public String getName() {
@@ -43,11 +43,8 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
-}
+
+
