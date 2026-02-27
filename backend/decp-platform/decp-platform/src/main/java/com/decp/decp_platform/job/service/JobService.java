@@ -7,6 +7,7 @@ import com.decp.decp_platform.job.dto.JobRequest;
 import com.decp.decp_platform.job.entity.Job;
 import com.decp.decp_platform.job.repository.JobApplicationRepository;
 import com.decp.decp_platform.job.repository.JobRepository;
+import com.decp.decp_platform.notification.service.NotificationService;
 import com.decp.decp_platform.user.entity.Role;
 import com.decp.decp_platform.user.entity.User;
 import com.decp.decp_platform.user.repository.UserRepository;
@@ -22,12 +23,14 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final JobApplicationRepository applicationRepository;
+    private final NotificationService notificationService;
 
     public JobService(JobRepository jobRepository,
-                      UserRepository userRepository, JobApplicationRepository applicationRepository) {
+                      UserRepository userRepository, JobApplicationRepository applicationRepository, NotificationService notificationService) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
+        this.notificationService = notificationService;
     }
 
     public Job createJob(JobRequest request) {
@@ -101,6 +104,12 @@ public class JobService {
                 new JobApplication(user, job, LocalDateTime.now());
 
         applicationRepository.save(application);
+        notificationService.createNotification(
+                user.getName() + " applied to your job: " + job.getTitle(),
+                "JOB_APPLICATION",
+                job.getPostedBy()
+        );
+
 
         return "Application submitted successfully";
     }
