@@ -3,6 +3,7 @@ package com.decp.decp_platform.messaging.service;
 
 import com.decp.decp_platform.messaging.entity.Message;
 import com.decp.decp_platform.messaging.repository.MessageRepository;
+import com.decp.decp_platform.notification.service.NotificationService;
 import com.decp.decp_platform.user.entity.User;
 import com.decp.decp_platform.user.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +18,13 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public MessageService(MessageRepository messageRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository, NotificationService notificationService) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public Message sendMessage(Long receiverId, String content) {
@@ -43,6 +46,15 @@ public class MessageService {
                 sender,
                 receiver
         );
+
+        if (!receiver.getId().equals(sender.getId())) {
+
+            notificationService.createNotification(
+                    "New message from " + sender.getName(),
+                    "MESSAGE",
+                    receiver
+            );
+        }
 
         return messageRepository.save(message);
     }

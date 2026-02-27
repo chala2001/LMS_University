@@ -2,6 +2,9 @@ package com.decp.decp_platform.user.controller;
 
 import com.decp.decp_platform.user.dto.LoginRequest;
 import com.decp.decp_platform.user.dto.RegisterRequest;
+import com.decp.decp_platform.user.dto.UpdateProfileRequest;
+import com.decp.decp_platform.user.dto.UserProfileResponse;
+import com.decp.decp_platform.user.entity.Role;
 import com.decp.decp_platform.user.entity.User;
 import com.decp.decp_platform.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +31,23 @@ public class UserController {
         String token = userService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(token);
     }
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("JWT Authentication Works!");
+
+    @PutMapping("/me")
+    public UserProfileResponse updateMyProfile(
+            @RequestBody UpdateProfileRequest request) {
+
+        return userService.updateMyProfile(request);
     }
+    @GetMapping("/me")
+    public UserProfileResponse getMyProfile() {
+        return userService.getMyProfile();
+    }
+
+    @PutMapping("/{id}/role")
+    public String changeUserRole(@PathVariable Long id,
+                                 @RequestParam Role role) {
+
+        return userService.changeUserRole(id, role);
+    }
+
 }

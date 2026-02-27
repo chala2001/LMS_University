@@ -8,6 +8,7 @@ import com.decp.decp_platform.event.entity.EventRSVP;
 import com.decp.decp_platform.event.entity.RSVPStatus;
 import com.decp.decp_platform.event.repository.EventRSVPRepository;
 import com.decp.decp_platform.event.repository.EventRepository;
+import com.decp.decp_platform.notification.service.NotificationService;
 import com.decp.decp_platform.user.entity.Role;
 import com.decp.decp_platform.user.entity.User;
 import com.decp.decp_platform.user.repository.UserRepository;
@@ -24,13 +25,40 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventRSVPRepository rsvpRepository;
+    private final NotificationService notificationService;
 
     public EventService(EventRepository eventRepository,
-                        UserRepository userRepository, EventRSVPRepository rsvpRepository) {
+                        UserRepository userRepository, EventRSVPRepository rsvpRepository, NotificationService notificationService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.rsvpRepository = rsvpRepository;
+        this.notificationService = notificationService;
     }
+
+//    public Event createEvent(EventRequest request) {
+//
+//        String email = SecurityContextHolder.getContext()
+//                .getAuthentication()
+//                .getName();
+//
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow();
+//
+//        // 🔥 BUSINESS RULE
+//        if (user.getRole() != Role.ADMIN) {
+//            throw new RuntimeException("Only admins can create events");
+//        }
+//
+//        Event event = new Event();
+//        event.setTitle(request.getTitle());
+//        event.setDescription(request.getDescription());
+//        event.setLocation(request.getLocation());
+//        event.setEventDate(request.getEventDate());
+//        event.setCreatedAt(LocalDateTime.now());
+//        event.setCreatedBy(user);
+//
+//        return eventRepository.save(event);
+//    }
 
     public Event createEvent(EventRequest request) {
 
@@ -41,7 +69,7 @@ public class EventService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow();
 
-        // 🔥 BUSINESS RULE
+        // 🔥 BUSINESS RULE: Only ADMIN can create events
         if (user.getRole() != Role.ADMIN) {
             throw new RuntimeException("Only admins can create events");
         }
@@ -54,7 +82,24 @@ public class EventService {
         event.setCreatedAt(LocalDateTime.now());
         event.setCreatedBy(user);
 
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+
+        // 🔥 NOTIFY ALL USERS ABOUT NEW EVENT
+        List<User> users = userRepository.findAll();
+
+        for (User u : users) {
+
+            if (!u.getId().equals(user.getId())) {
+
+                notificationService.createNotification(
+                        "New event available: " + savedEvent.getTitle(),
+                        "EVENT",
+                        u
+                );
+            }
+        }
+
+        return savedEvent;
     }
 
     public List<EventResponse> getAllEvents() {
@@ -120,5 +165,55 @@ public class EventService {
     public long getGoingCount(Event event) {
         return rsvpRepository.countByEventAndStatus(
                 event, RSVPStatus.GOING);
+    }
+
+    public Event updateEvent(Long eventId, EventRequest request) {
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // 🔥 Only ADMIN who created it can update
+        if (!event.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not allowed to update this event");
+        }
+
+        event.setTitle(request.getTitle());
+        event.setDescription(request.getDescription());
+        event.setLocation(request.getLocation());
+        event.setEventDate(request.getEventDate());
+
+        return eventRepository.save(event);
+    }
+
+    public String deleteEvent(Long eventId) {
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        if (!event.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not allowed to delete this event");
+        }
+
+        // 🔥 Delete related RSVPs first
+        List<EventRSVP> rsvps = rsvpRepository.findByEvent(event);
+        rsvpRepository.deleteAll(rsvps);
+
+        eventRepository.delete(event);
+
+        return "Event deleted successfully";
     }
 }

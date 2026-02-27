@@ -3,6 +3,8 @@ package com.decp.decp_platform.like.service;
 
 import com.decp.decp_platform.like.entity.PostLike;
 import com.decp.decp_platform.like.repository.PostLikeRepository;
+
+import com.decp.decp_platform.notification.service.NotificationService;
 import com.decp.decp_platform.post.entity.Post;
 import com.decp.decp_platform.post.repository.PostRepository;
 import com.decp.decp_platform.user.entity.User;
@@ -16,13 +18,15 @@ public class PostLikeService {
     private final PostLikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public PostLikeService(PostLikeRepository likeRepository,
                            PostRepository postRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository, NotificationService notificationService) {
         this.likeRepository = likeRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public String toggleLike(Long postId) {
@@ -44,6 +48,14 @@ public class PostLikeService {
             return "Unliked";
         } else {
             likeRepository.save(new PostLike(user, post));
+            if (!post.getUser().getId().equals(user.getId())) {
+
+                notificationService.createNotification(
+                        user.getName() + " liked your post",
+                        "LIKE",
+                        post.getUser()
+                );
+            }
             return "Liked";
         }
     }
