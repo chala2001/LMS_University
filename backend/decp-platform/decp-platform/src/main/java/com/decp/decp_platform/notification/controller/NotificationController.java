@@ -39,7 +39,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
-    public String markAsRead(@PathVariable Long id) {
+    public String markAsRead(@PathVariable("id") Long id) {
 
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()

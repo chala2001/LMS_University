@@ -1,0 +1,11 @@
+com\decp\decp_platform\analytics\service\AnalyticsService.class
+com\decp\decp_platform\post\controller\PostController.class
+com\decp\decp_platform\event\controller\EventController.class
+com\decp\decp_platform\like\controller\PostLikeController.class
+com\decp\decp_platform\comment\controller\CommentController.class
+com\decp\decp_platform\notification\controller\NotificationController.class
+com\decp\decp_platform\user\controller\UserController.class
+com\decp\decp_platform\job\controller\JobController.class
+com\decp\decp_platform\job\service\JobService.class
+com\decp\decp_platform\messaging\controller\MessageController.class
+com\decp\decp_platform\job\repository\JobApplicationRepository.class

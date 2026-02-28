@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import com.decp.decp_platform.research.dto.ResearchProjectResponse;
 
 @Service
 public class ResearchService {
@@ -27,7 +29,7 @@ public class ResearchService {
         this.userRepository = userRepository;
     }
 
-    public ResearchProject createProject(String title, String description) {
+    public ResearchProject createProject(String title, String description, String status) {
 
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -39,6 +41,7 @@ public class ResearchService {
         ResearchProject project = new ResearchProject();
         project.setTitle(title);
         project.setDescription(description);
+        project.setStatus(status != null && !status.isEmpty() ? status : "ACTIVE");
         project.setCreatedAt(LocalDateTime.now());
         project.setCreatedBy(user);
 
@@ -75,8 +78,23 @@ public class ResearchService {
         return "Joined project successfully";
     }
 
-    public List<ResearchProject> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ResearchProjectResponse> getAllProjects() {
+        return projectRepository.findAll().stream().map(project -> {
+            List<String> members = memberRepository.findByProject(project)
+                    .stream()
+                    .map(m -> m.getUser().getName())
+                    .collect(Collectors.toList());
+
+            return new ResearchProjectResponse(
+                    project.getId(),
+                    project.getTitle(),
+                    project.getDescription(),
+                    project.getCreatedAt(),
+                    project.getCreatedBy().getName(),
+                    members,
+                    project.getStatus() != null ? project.getStatus() : "ACTIVE"
+            );
+        }).collect(Collectors.toList());
     }
 
     public List<String> getProjectMembers(Long projectId) {
@@ -93,7 +111,8 @@ public class ResearchService {
 
     public ResearchProject updateProject(Long projectId,
                                          String title,
-                                         String description) {
+                                         String description,
+                                         String status) {
 
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -112,6 +131,7 @@ public class ResearchService {
 
         project.setTitle(title);
         project.setDescription(description);
+        if (status != null && !status.isEmpty()) { project.setStatus(status); }
 
         return projectRepository.save(project);
     }

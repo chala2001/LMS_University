@@ -19,8 +19,8 @@ public class MessageController {
 
     @PostMapping("/{receiverId}")
     public ResponseEntity<Message> sendMessage(
-            @PathVariable Long receiverId,
-            @RequestParam String content) {
+            @PathVariable("receiverId") Long receiverId,
+            @RequestParam("content") String content) {
 
         return ResponseEntity.ok(
                 messageService.sendMessage(receiverId, content)
@@ -29,10 +29,15 @@ public class MessageController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<Message>> getConversation(
-            @PathVariable Long userId) {
+            @PathVariable("userId") Long userId) {
 
         return ResponseEntity.ok(
                 messageService.getConversation(userId)
         );
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Message>> getAllMyMessages() {
+        return ResponseEntity.ok(messageService.getAllMyMessages());
     }
 }

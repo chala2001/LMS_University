@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -71,21 +70,30 @@ public class MessageService {
         User otherUser = userRepository.findById(otherUserId)
                 .orElseThrow();
 
-        List<Message> sent =
-                messageRepository.findBySenderAndReceiverOrderBySentAtAsc(
-                        currentUser, otherUser);
-
-        List<Message> received =
-                messageRepository.findByReceiverAndSenderOrderBySentAtAsc(
-                        currentUser, otherUser);
-
-        List<Message> conversation = new ArrayList<>();
-        conversation.addAll(sent);
-        conversation.addAll(received);
-
-        conversation.sort((m1, m2) ->
-                m1.getSentAt().compareTo(m2.getSentAt()));
+        List<Message> conversation = messageRepository.findFullConversation(currentUser.getId(), otherUser.getId());
+        
+        boolean updated = false;
+        for (Message m : conversation) {
+            if (m.getReceiver().getId().equals(currentUser.getId()) && !m.isRead()) {
+                m.setRead(true);
+                updated = true;
+            }
+        }
+        if (updated) {
+            messageRepository.saveAll(conversation);
+        }
 
         return conversation;
+    }
+
+    public List<Message> getAllMyMessages() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        return messageRepository.findAllUserMessages(currentUser.getId());
     }
 }

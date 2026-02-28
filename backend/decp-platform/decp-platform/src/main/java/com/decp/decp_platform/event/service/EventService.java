@@ -3,6 +3,7 @@ package com.decp.decp_platform.event.service;
 
 import com.decp.decp_platform.event.dto.EventRequest;
 import com.decp.decp_platform.event.dto.EventResponse;
+import com.decp.decp_platform.user.dto.UserProfileResponse;
 import com.decp.decp_platform.event.entity.Event;
 import com.decp.decp_platform.event.entity.EventRSVP;
 import com.decp.decp_platform.event.entity.RSVPStatus;
@@ -103,6 +104,12 @@ public class EventService {
     }
 
     public List<EventResponse> getAllEvents() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElse(null);
 
         List<Event> events = eventRepository.findAll();
 
@@ -112,6 +119,14 @@ public class EventService {
                     rsvpRepository.countByEventAndStatus(
                             event, RSVPStatus.GOING);
 
+            String currentUserRsvp = "NONE";
+            if (currentUser != null) {
+                Optional<EventRSVP> userRsvp = rsvpRepository.findByUserAndEvent(currentUser, event);
+                if (userRsvp.isPresent()) {
+                    currentUserRsvp = userRsvp.get().getStatus().name();
+                }
+            }
+
             return new EventResponse(
                     event.getId(),
                     event.getTitle(),
@@ -120,7 +135,8 @@ public class EventService {
                     event.getEventDate(),
                     event.getCreatedBy().getName(),
                     goingCount,
-                    event.getCreatedAt()
+                    event.getCreatedAt(),
+                    currentUserRsvp
             );
 
         }).toList();
@@ -165,6 +181,36 @@ public class EventService {
     public long getGoingCount(Event event) {
         return rsvpRepository.countByEventAndStatus(
                 event, RSVPStatus.GOING);
+    }
+
+    public List<UserProfileResponse> getEventAttendees(Long eventId) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        if (user.getRole() != Role.ADMIN) {
+            throw new RuntimeException("Only admins can view event attendees");
+        }
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        List<EventRSVP> rsvps = rsvpRepository.findByEvent(event);
+
+        return rsvps.stream()
+                .filter(rsvp -> rsvp.getStatus() == RSVPStatus.GOING)
+                .map(rsvp -> {
+                    User rsvpUser = rsvp.getUser();
+                    return new UserProfileResponse(
+                            rsvpUser.getId(),
+                            rsvpUser.getName(),
+                            rsvpUser.getEmail(),
+                            rsvpUser.getRole()
+                    );
+                }).toList();
     }
 
     public Event updateEvent(Long eventId, EventRequest request) {

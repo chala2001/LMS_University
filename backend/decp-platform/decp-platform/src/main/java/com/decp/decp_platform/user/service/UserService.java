@@ -10,6 +10,7 @@ import com.decp.decp_platform.user.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -65,6 +66,15 @@ public class UserService {
                 user.getEmail(),
                 user.getRole()
         );
+    }
+
+    public List<UserProfileResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> new UserProfileResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        )).toList();
     }
 
     public UserProfileResponse updateMyProfile(UpdateProfileRequest request) {
