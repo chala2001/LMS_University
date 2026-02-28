@@ -8,6 +8,7 @@ import com.decp.decp_platform.job.entity.Job;
 import com.decp.decp_platform.job.repository.JobApplicationRepository;
 import com.decp.decp_platform.job.repository.JobRepository;
 import com.decp.decp_platform.notification.service.NotificationService;
+import com.decp.decp_platform.user.dto.UserProfileResponse;
 import com.decp.decp_platform.user.entity.Role;
 import com.decp.decp_platform.user.entity.User;
 import com.decp.decp_platform.user.repository.UserRepository;
@@ -155,6 +156,34 @@ public class JobService {
         return "Application submitted successfully";
     }
 
+    public List<UserProfileResponse> getJobApplicants(Long jobId) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        if (user.getRole() == Role.STUDENT) {
+            throw new RuntimeException("Students cannot view job applicants");
+        }
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        return applicationRepository.findByJob(job).stream()
+                .map(application -> {
+                    User applicant = application.getUser();
+                    return new UserProfileResponse(
+                            applicant.getId(),
+                            applicant.getName(),
+                            applicant.getEmail(),
+                            applicant.getRole()
+                    );
+                })
+                .toList();
+    }
+
 
     public Job updateJob(Long jobId, JobRequest request) {
 
@@ -168,8 +197,11 @@ public class JobService {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
-        // 🔥 Only ADMIN or ALUMNI who posted it can update
-        if (!job.getPostedBy().getId().equals(user.getId())) {
+        // 🔥 ADMIN or the original ALUMNI/ADMIN who posted it can update
+        boolean isCreator = job.getPostedBy().getId().equals(user.getId());
+        boolean isAdmin = user.getRole().name().equals("ADMIN");
+
+        if (!isCreator && !isAdmin) {
             throw new RuntimeException("You are not allowed to update this job");
         }
 
@@ -193,10 +225,15 @@ public class JobService {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
-        if (!job.getPostedBy().getId().equals(user.getId())) {
+        boolean isCreator = job.getPostedBy().getId().equals(user.getId());
+        boolean isAdmin = user.getRole().name().equals("ADMIN");
+
+        if (!isCreator && !isAdmin) {
             throw new RuntimeException("You are not allowed to delete this job");
         }
 
+        // 🔥 Remove constrained records beforehand since no CascadeType exists on Job
+        applicationRepository.deleteByJob(job);
         jobRepository.delete(job);
 
         return "Job deleted successfully";

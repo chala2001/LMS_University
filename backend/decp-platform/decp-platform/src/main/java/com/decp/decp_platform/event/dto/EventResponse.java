@@ -12,6 +12,7 @@ public class EventResponse {
     private String createdBy;
     private long goingCount;
     private LocalDateTime createdAt;
+    private String currentUserRsvp; // "GOING", "NOT_GOING", or "NONE"
 
     public EventResponse(Long id,
                          String title,
@@ -20,7 +21,8 @@ public class EventResponse {
                          LocalDateTime eventDate,
                          String createdBy,
                          long goingCount,
-                         LocalDateTime createdAt) {
+                         LocalDateTime createdAt,
+                         String currentUserRsvp) {
 
         this.id = id;
         this.title = title;
@@ -30,6 +32,7 @@ public class EventResponse {
         this.createdBy = createdBy;
         this.goingCount = goingCount;
         this.createdAt = createdAt;
+        this.currentUserRsvp = currentUserRsvp;
     }
 
     public Long getId() { return id; }
@@ -40,4 +43,5 @@ public class EventResponse {
     public String getCreatedBy() { return createdBy; }
     public long getGoingCount() { return goingCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getCurrentUserRsvp() { return currentUserRsvp; }
 }

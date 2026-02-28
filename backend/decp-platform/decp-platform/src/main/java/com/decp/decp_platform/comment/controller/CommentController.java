@@ -19,13 +19,13 @@ public class CommentController {
     }
 
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<Comment> addComment(@PathVariable Long postId,
+    public ResponseEntity<Comment> addComment(@PathVariable("postId") Long postId,
                                               @RequestBody CommentRequest request) {
         return ResponseEntity.ok(commentService.addComment(postId, request));
     }
 
     @GetMapping("/{postId}/comments")
-    public ResponseEntity<List<Comment>> getComments(@PathVariable Long postId) {
+    public ResponseEntity<List<Comment>> getComments(@PathVariable("postId") Long postId) {
         return ResponseEntity.ok(commentService.getCommentsByPost(postId));
     }
 }

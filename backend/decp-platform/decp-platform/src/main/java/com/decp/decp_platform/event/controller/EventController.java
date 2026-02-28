@@ -3,6 +3,7 @@ package com.decp.decp_platform.event.controller;
 
 import com.decp.decp_platform.event.dto.EventRequest;
 import com.decp.decp_platform.event.dto.EventResponse;
+import com.decp.decp_platform.user.dto.UserProfileResponse;
 import com.decp.decp_platform.event.entity.Event;
 import com.decp.decp_platform.event.entity.RSVPStatus;
 import com.decp.decp_platform.event.service.EventService;
@@ -32,24 +33,29 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/rsvp")
-    public ResponseEntity<String> rsvp(
-            @PathVariable Long eventId,
-            @RequestParam RSVPStatus status) {
+    public ResponseEntity<String> rsvpToEvent(
+            @PathVariable("eventId") Long eventId,
+            @RequestParam("status") RSVPStatus status) {
 
         return ResponseEntity.ok(
                 eventService.respondToEvent(eventId, status)
         );
     }
 
+    @GetMapping("/{eventId}/attendees")
+    public ResponseEntity<List<UserProfileResponse>> getEventAttendees(@PathVariable("eventId") Long eventId) {
+        return ResponseEntity.ok(eventService.getEventAttendees(eventId));
+    }
+
     @PutMapping("/{id}")
-    public Event updateEvent(@PathVariable Long id,
+    public Event updateEvent(@PathVariable("id") Long id,
                              @RequestBody EventRequest request) {
 
         return eventService.updateEvent(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteEvent(@PathVariable Long id) {
+    public String deleteEvent(@PathVariable("id") Long id) {
         return eventService.deleteEvent(id);
     }
 }

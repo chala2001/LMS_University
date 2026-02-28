@@ -10,6 +10,8 @@ import com.decp.decp_platform.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin
@@ -43,11 +45,15 @@ public class UserController {
         return userService.getMyProfile();
     }
 
+    @GetMapping
+    public List<UserProfileResponse> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
     @PutMapping("/{id}/role")
-    public String changeUserRole(@PathVariable Long id,
-                                 @RequestParam Role role) {
+    public String changeUserRole(@PathVariable("id") Long id,
+                                 @RequestParam("role") Role role) {
 
         return userService.changeUserRole(id, role);
     }
-
 }

@@ -1,6 +1,6 @@
 package com.decp.decp_platform.user.dto;
 
-import com.decp.decp_platform.user.entity.Role;
+// import com.decp.decp_platform.user.entity.Role;
 
 public class RegisterRequest {
 

@@ -4,7 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8b977ce-efe2-4e06-8e0a-8ac4fafdae3e" name="Changes" comment="" />
+    <list default="true" id="c8b977ce-efe2-4e06-8e0a-8ac4fafdae3e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/comment/controller/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/comment/controller/CommentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/event/controller/EventController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/event/controller/EventController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/controller/JobController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/controller/JobController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/repository/JobApplicationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/repository/JobApplicationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/service/JobService.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/job/service/JobService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/like/controller/PostLikeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/like/controller/PostLikeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/messaging/controller/MessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/messaging/controller/MessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/notification/controller/NotificationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/notification/controller/NotificationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/post/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/post/controller/PostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/research/controller/ResearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/research/controller/ResearchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/research/service/ResearchService.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/research/service/ResearchService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/user/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/user/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/user/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/src/main/java/com/decp/decp_platform/user/dto/RegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/target/classes/com/decp/decp_platform/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/target/classes/com/decp/decp_platform/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/decp-platform/decp-platform/target/classes/com/decp/decp_platform/user/dto/RegisterRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/decp-platform/decp-platform/target/classes/com/decp/decp_platform/user/dto/RegisterRequest.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,9 +46,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="3AFkjQIbqwIAXQrspSpMBsSXVX6" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -40,7 +58,7 @@
   "keyToString": {
     "Application.DecpPlatformApplication.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/notifications",
+    "git-widget-placeholder": "feature/AccessControl",
     "kotlin-language-version-configured": "true"
   }
 }]]></component>
