@@ -164,7 +164,7 @@ services:
   backend:
     build:
       # Don't download an image. Build the custom Dockerfile we wrote in the backend folder!
-      context: ./backend/decp-platform/decp-platform
+      context: ./backend
       dockerfile: Dockerfile
     container_name: decp-backend
     restart: always

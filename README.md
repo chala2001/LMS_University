@@ -277,7 +277,7 @@ docker exec -i decp-mysql mysql -uroot -proot LMS_db -e \
 
 ```bash
 # Navigate to backend
-cd backend/decp-platform/decp-platform
+cd backend
 
 # Build with Maven
 mvn clean install
@@ -307,7 +307,7 @@ npm run dev
 
 ```bash
 # Navigate to mobile
-cd mobile_frontend
+cd mobile
 
 # Install dependencies
 npm install
@@ -574,118 +574,80 @@ CREATE TABLE messages (
 ```
 LMS_University/
 │
-├── backend/
-│   └── decp-platform/decp-platform/
-│       ├── src/
-│       │   ├── main/
-│       │   │   ├── java/com/decp/
-│       │   │   │   ├── DecpApplication.java         # Main entry point
-│       │   │   │   ├── controller/
-│       │   │   │   │   ├── AuthController.java      # Auth endpoints
-│       │   │   │   │   ├── UserController.java      # User CRUD
-│       │   │   │   │   ├── PostController.java      # Posts CRUD
-│       │   │   │   │   ├── EventController.java     # Events management
-│       │   │   │   │   ├── JobController.java       # Jobs/ATS
-│       │   │   │   │   ├── MessageController.java   # Messaging
-│       │   │   │   │   └── AdminController.java     # Admin analytics
-│       │   │   │   ├── service/
-│       │   │   │   │   ├── AuthService.java         # Auth logic
-│       │   │   │   │   ├── UserService.java         # User business logic
-│       │   │   │   │   ├── PostService.java         # Post operations
-│       │   │   │   │   ├── EventService.java        # Event management
-│       │   │   │   │   ├── JobService.java          # Job operations
-│       │   │   │   │   └── MessageService.java      # Messaging logic
-│       │   │   │   ├── repository/
-│       │   │   │   │   ├── UserRepository.java      # User queries
-│       │   │   │   │   ├── PostRepository.java      # Post queries
-│       │   │   │   │   ├── EventRepository.java     # Event queries
-│       │   │   │   │   ├── JobRepository.java       # Job queries
-│       │   │   │   │   └── MessageRepository.java   # Message queries
-│       │   │   │   ├── entity/
-│       │   │   │   │   ├── User.java                # User JPA entity
-│       │   │   │   │   ├── Post.java                # Post JPA entity
-│       │   │   │   │   ├── Event.java               # Event JPA entity
-│       │   │   │   │   ├── Job.java                 # Job JPA entity
-│       │   │   │   │   └── Message.java             # Message JPA entity
-│       │   │   │   ├── dto/
-│       │   │   │   │   ├── LoginRequest.java        # Login DTO
-│       │   │   │   │   ├── UserDTO.java             # User DTO
-│       │   │   │   │   ├── PostDTO.java             # Post DTO
-│       │   │   │   │   └── ...
-│       │   │   │   ├── security/
-│       │   │   │   │   ├── JwtTokenProvider.java    # JWT utilities
-│       │   │   │   │   ├── JwtAuthFilter.java       # Auth filter
-│       │   │   │   │   └── SecurityConfig.java      # Spring Security config
-│       │   │   │   └── exception/
-│       │   │   │       ├── UserNotFoundException.java
-│       │   │   │       └── UnauthorizedException.java
-│       │   │   └── resources/
-│       │   │       ├── application.properties       # Main config
-│       │   │       ├── application-docker.properties# Docker config
-│       │   │       └── db-schema.sql               # Database initialization
-│       │   └── test/java/...                        # Unit tests
-│       ├── pom.xml                                  # Maven dependencies
-│       ├── Dockerfile                               # Docker build file
-│       └── .dockerignore
+├── backend/                          # Spring Boot API (Java 17, Maven)
+│   ├── src/main/java/com/decp/decp_platform/
+│   │   ├── DecpPlatformApplication.java   # Application entry point
+│   │   ├── config/                        # SecurityConfig, JwtUtil,
+│   │   │                                  # JwtAuthenticationFilter, CorsConfig
+│   │   ├── user/                          # Auth, profiles, roles (RBAC)
+│   │   ├── post/                          # Social feed posts
+│   │   ├── comment/                       # Post comments
+│   │   ├── like/                          # Post likes
+│   │   ├── messaging/                     # Direct messaging
+│   │   ├── notification/                  # Notifications
+│   │   ├── event/                         # Event management
+│   │   ├── job/                           # Job portal & applications
+│   │   ├── research/                      # Research collaboration
+│   │   └── analytics/                     # Admin analytics
+│   │
+│   │   Each feature package follows the same layering:
+│   │   controller/ · service/ · repository/ · entity/ · dto/
+│   │
+│   ├── src/main/resources/application.properties
+│   ├── src/test/                          # Unit tests
+│   ├── Dockerfile                         # Multi-stage: Maven build -> JRE runtime
+│   ├── pom.xml                            # Maven dependencies
+│   └── mvnw, mvnw.cmd, .mvn/              # Maven wrapper
 │
-├── frontend/
+├── frontend/                         # React 18 + Vite web client
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx                           # Top navigation
-│   │   │   ├── Sidebar.jsx                          # Side navigation
-│   │   │   ├── PostCard.jsx                         # Post component
-│   │   │   ├── EventCard.jsx                        # Event component
-│   │   │   ├── JobCard.jsx                          # Job component
-│   │   │   └── MessageBubble.jsx                    # Message component
-│   │   ├── pages/
-│   │   │   ├── LoginPage.jsx                        # Authentication
-│   │   │   ├── DashboardPage.jsx                    # Home dashboard
-│   │   │   ├── ProfilePage.jsx                      # User profile
-│   │   │   ├── MessagesPage.jsx                     # Messaging
-│   │   │   ├── EventsPage.jsx                       # Events listing
-│   │   │   ├── JobsPage.jsx                         # Jobs listing
-│   │   │   ├── AdminPage.jsx                        # Admin dashboard
-│   │   │   └── NotFoundPage.jsx                     # 404 page
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx                      # Auth state management
-│   │   ├── api/
-│   │   │   └── client.js                            # Axios instance with interceptors
-│   │   ├── App.jsx                                  # Root component
-│   │   ├── App.css                                  # Global styles
-│   │   └── main.jsx                                 # Entry point
+│   │   ├── pages/                         # Auth, Dashboard, Events, Jobs,
+│   │   │                                  # Messages, Profile, Research
+│   │   ├── components/Layout.jsx          # Shared app shell
+│   │   ├── context/AuthContext.jsx        # Auth state management
+│   │   ├── api/index.js                   # Axios instance with interceptors
+│   │   ├── App.jsx                        # Root component & routing
+│   │   ├── main.jsx                       # Entry point
+│   │   └── index.css                      # Global styles
 │   ├── public/
-│   │   └── index.html
-│   ├── package.json
+│   ├── Dockerfile                         # Multi-stage: Node build -> Nginx
+│   ├── nginx.conf                         # Nginx reverse-proxy config
 │   ├── vite.config.js
-│   ├── Dockerfile                                   # Multi-stage build
-│   ├── nginx.conf                                   # Nginx configuration
-│   └── .dockerignore
+│   └── package.json
 │
-├── mobile_frontend/
+├── mobile/                           # React Native (Expo) client
 │   ├── src/
-│   │   ├── screens/
-│   │   │   ├── HomeScreen.js                        # Home feed
-│   │   │   ├── MessagesScreen.js                    # Messaging
-│   │   │   ├── EventsScreen.js                      # Events
-│   │   │   ├── JobsScreen.js                        # Jobs
-│   │   │   └── ProfileScreen.js                     # User profile
-│   │   ├── navigation/
-│   │   │   └── AppNavigator.js                      # Navigation structure
-│   │   ├── api/
-│   │   │   └── client.js                            # Axios + LocalTunnel
-│   │   ├── context/
-│   │   │   └── AuthContext.js                       # Auth + SecureStore
-│   │   ├── App.js                                   # Root component
-│   │   └── app.json                                 # Expo config
-│   ├── package.json
-│   └── babel.config.js
+│   │   ├── screens/                       # Login, Register, Dashboard, Events,
+│   │   │                                  # Jobs, Messages, Profile, Research
+│   │   ├── context/AuthContext.js         # Auth + SecureStore
+│   │   └── api/index.js                   # Axios + tunnel base URL
+│   ├── assets/                            # Icons and splash screens
+│   ├── App.js                             # Root component
+│   ├── index.js                           # Expo entry point
+│   ├── app.json                           # Expo config
+│   └── package.json
 │
-├── docker-compose.yml                               # Multi-container orchestration
-├── .env.example                                     # Environment variables template
+├── docs/                             # Documentation
+│   ├── backend.md                         # Backend architecture & API notes
+│   ├── frontend.md                        # Frontend architecture
+│   ├── docker.md                          # Containerization walkthrough
+│   └── security.md                        # Web security implementation
+│
+├── scripts/                          # PowerShell API smoke tests
+│   ├── test_backend.ps1
+│   ├── test_admin_backend.ps1
+│   ├── test_delete.ps1
+│   └── test_msg.ps1
+│
+├── docker-compose.yml                # Multi-container orchestration
 ├── .gitignore
-├── README.md                                        # This file
-└── DEPLOYMENT.md                                    # Cloud deployment guide
+└── README.md                         # This file
 ```
+
+> 🚀 Deploying this stack on Kubernetes? The
+> [LMS_FullStack_K8s_Deployment](https://github.com/chala2001/LMS_FullStack_K8s_Deployment)
+> repo carries the same layout plus a `k8s/` directory of manifests
+> (StatefulSet, Deployments, Services, ConfigMaps, Secrets, PV/PVC).
 
 ---
 
