@@ -10,6 +10,16 @@
 ![JWT](https://img.shields.io/badge/Security-JWT-000000?style=flat-square&logo=json-web-tokens)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
+> ### ☸️ Looking for the Kubernetes edition?
+>
+> **[LMS_FullStack_K8s_Deployment](https://github.com/chala2001/LMS_FullStack_K8s_Deployment)**
+> is the extended version of this project — the same DECP application, orchestrated
+> on Kubernetes with StatefulSets, Deployments, Services, ConfigMaps, Secrets,
+> persistent volumes, health probes and horizontal auto-scaling. Start here for
+> the application itself; go there for the production deployment story.
+
+---
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -21,6 +31,7 @@
 - [Database Schema](#-database-schema)
 - [Project Structure](#-project-directory-structure)
 - [Deployment](#-deployment-guide)
+- [Kubernetes Deployment](#️-kubernetes-deployment)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -671,14 +682,36 @@ docker-compose logs -f backend
 docker-compose up -d --scale backend=5
 ```
 
-### Cloud Deployment
+---
 
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for:
-- **AWS** - ECS, RDS, CloudFront
-- **Google Cloud** - Cloud Run, Cloud SQL
-- **Azure** - App Service, Azure Database
-- **DigitalOcean** - App Platform, Managed Databases
-- **Heroku** - Container deployment
+## ☸️ Kubernetes Deployment
+
+Docker Compose runs this stack on a single host. For a cluster-grade deployment,
+the extended companion repository takes the same three services and orchestrates
+them on Kubernetes:
+
+### 🔗 [chala2001/LMS_FullStack_K8s_Deployment](https://github.com/chala2001/LMS_FullStack_K8s_Deployment)
+
+```bash
+git clone https://github.com/chala2001/LMS_FullStack_K8s_Deployment.git
+cd LMS_FullStack_K8s_Deployment
+kubectl apply -f k8s/
+```
+
+What the K8s repo adds on top of this project:
+
+| Capability | How it is delivered |
+|-----------|---------------------|
+| **Stateful database** | MySQL `StatefulSet` with PersistentVolume / PersistentVolumeClaim |
+| **Stateless services** | Backend & frontend `Deployment`s with replica sets |
+| **Networking** | ClusterIP + NodePort `Service`s, Nginx routing to `backend-service` |
+| **Configuration** | `ConfigMap`s for app config, `Secret`s for database credentials |
+| **Resilience** | Liveness & readiness probes, self-healing pod restarts |
+| **Scaling** | Horizontal Pod Autoscaler, rolling updates with zero downtime |
+| **Documentation** | A seven-part `docs/kubernetes/` guide, from architecture to running the cluster |
+
+Both repositories share the same `backend/` · `frontend/` · `mobile/` · `docs/` ·
+`scripts/` layout, so moving between them requires no re-orientation.
 
 ---
 
